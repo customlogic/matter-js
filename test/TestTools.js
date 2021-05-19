@@ -202,6 +202,25 @@ const equals = (a, b) => {
     return true;
 };
 
+const logReport = (captures, version) => {
+    let report = '';
+
+    for (const capture of Object.values(captures)) {
+        if (!capture.logs.length) {
+            continue;
+        }
+
+        report += `  ${capture.name}\n`;
+
+        for (const log of capture.logs) {
+            report += `    ${log}\n`;
+        }
+    }
+
+    return `Output logs from ${color(version, colors.Yellow)} version on last run\n\n` 
+        + (report ? report : '  None\n');
+};
+
 const comparisonReport = (capturesDev, capturesBuild, buildVersion, save) => {
     const similaritys = captureSimilarityExtrinsic(capturesDev, capturesBuild);
     const similarityEntries = Object.entries(similaritys);
@@ -236,7 +255,10 @@ const comparisonReport = (capturesDev, capturesBuild, buildVersion, save) => {
     similarityEntries.sort((a, b) => a[1] - b[1]);
 
     let perfChange = 1 - (totalTimeDev / totalTimeBuild);
-    perfChange = perfChange < -0.05 || perfChange > 0.05 ? perfChange : 0;
+    
+    const perfChangeThreshold = 0.075;
+    const perfChangeLarge = Math.abs(perfChange) > perfChangeThreshold;
+    perfChange = perfChangeLarge ? perfChange : 0;
 
     let similarityAvg = 0;
     similarityEntries.forEach(([_, similarity]) => {
@@ -249,7 +271,7 @@ const comparisonReport = (capturesDev, capturesBuild, buildVersion, save) => {
 
     const report = (breakEvery, format) => [
         [`Output comparison of ${similarityEntries.length}`,
-         `examples against ${format('matter-js@' + buildVersion, colors.Yellow)} build on last run`
+         `examples against previous release ${format('matter-js@' + buildVersion, colors.Yellow)}`
         ].join(' '),
         `\n\n${format('Similarity', colors.White)}`,
         `${format(toPercent(similarityAvg), similarityAvg === 1 ? colors.Green : colors.Yellow)}%`,
@@ -281,6 +303,6 @@ const comparisonReport = (capturesDev, capturesBuild, buildVersion, save) => {
 };
 
 module.exports = {
-    engineCapture, comparisonReport,
+    engineCapture, comparisonReport, logReport,
     toMatchExtrinsics, toMatchIntrinsics
 };

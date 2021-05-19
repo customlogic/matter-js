@@ -1,13 +1,14 @@
 var Example = Example || {};
 
-Example.stack = function() {
+Example.stats = function() {
     var Engine = Matter.Engine,
         Render = Matter.Render,
         Runner = Matter.Runner,
+        Common = Matter.Common,
         Composites = Matter.Composites,
         MouseConstraint = Matter.MouseConstraint,
         Mouse = Matter.Mouse,
-        Composite = Matter.Composite,
+        World = Matter.World,
         Bodies = Matter.Bodies;
 
     // create engine
@@ -21,7 +22,9 @@ Example.stack = function() {
         options: {
             width: 800,
             height: 600,
-            showAngleIndicator: true
+            // show stats and performance monitors
+            showStats: true,
+            showPerformance: true
         }
     });
 
@@ -31,18 +34,17 @@ Example.stack = function() {
     var runner = Runner.create();
     Runner.run(runner, engine);
 
-    // add bodies
-    var stack = Composites.stack(200, 606 - 25.25 - 5 * 40, 10, 5, 0, 0, function(x, y) {
-        return Bodies.rectangle(x, y, 40, 40);
+    // scene code
+    var stack = Composites.stack(70, 30, 13, 9, 5, 5, function(x, y) {
+        return Bodies.circle(x, y, 10 + Common.random() * 20);
     });
     
-    Composite.add(world, [
+    World.add(world, [
         stack,
-        // walls
         Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
+        Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
         Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
-        Bodies.rectangle(0, 300, 50, 600, { isStatic: true }),
-        Bodies.rectangle(400, 606, 800, 50.5, { isStatic: true })
+        Bodies.rectangle(0, 300, 50, 600, { isStatic: true })
     ]);
 
     // add mouse control
@@ -57,7 +59,7 @@ Example.stack = function() {
             }
         });
 
-    Composite.add(world, mouseConstraint);
+    World.add(world, mouseConstraint);
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
@@ -81,9 +83,9 @@ Example.stack = function() {
     };
 };
 
-Example.stack.title = 'Stack';
-Example.stack.for = '>=0.14.2';
+Example.stats.title = 'Stats & Performance';
+Example.stats.for = '>=0.16.1';
 
 if (typeof module !== 'undefined') {
-    module.exports = Example.stack;
+    module.exports = Example.stats;
 }

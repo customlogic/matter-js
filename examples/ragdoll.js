@@ -12,7 +12,6 @@ Example.ragdoll = function() {
         Constraint = Matter.Constraint,
         MouseConstraint = Matter.MouseConstraint,
         Mouse = Matter.Mouse,
-        World = Matter.World,
         Bodies = Matter.Bodies,
         Vector = Matter.Vector;
 
@@ -80,7 +79,7 @@ Example.ragdoll = function() {
         Composite.add(ragdolls, ragdoll);
     }
 
-    World.add(world, [stack, obstacles, ragdolls]);
+    Composite.add(world, [stack, obstacles, ragdolls]);
 
     var timeScaleTarget = 1,
         counter = 0;
@@ -173,7 +172,7 @@ Example.ragdoll = function() {
             }
         });
 
-    World.add(world, mouseConstraint);
+    Composite.add(world, mouseConstraint);
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
@@ -498,6 +497,7 @@ Example.ragdoll.ragdoll = function(x, y, scale, options) {
     return person;
 };
 
+Example.ragdoll.title = 'Ragdoll';
 Example.ragdoll.for = '>=0.14.2';
 
 if (typeof module !== 'undefined') {
